@@ -155,7 +155,7 @@ mvn spring-boot:run
 
 Acesse a documentação Swagger em:
 ```
-http://localhost:{porta}/swagger-ui.html
+http://localhost:8082/swagger-ui.html
 ```
 
 ## 👥 Autores
