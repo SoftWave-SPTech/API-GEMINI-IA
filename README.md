@@ -15,14 +15,6 @@ Esta API permite a análise automatizada de movimentações de processos jurídi
 - Swagger/OpenAPI 3.0
 - Gemini IA (Google)
 
-## 🔐 Autenticação
-
-Todos os endpoints requerem autenticação via Bearer Token. Inclua o token no header das requisições:
-
-```
-Authorization: Bearer {seu-token}
-```
-
 ## 📍 Endpoints
 
 ### Base URL
