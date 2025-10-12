@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Documentação Swagger da API SoftWave",
+                title = "Documentação Swagger da API Softwave Integration Gemini IA",
                 description = "API desenvolvida em Spring Boot com o objetivo de integrar o sistema jurídico à API externa do Gemini AI",
                 contact = @Contact(
                         name = "SoftWave",
