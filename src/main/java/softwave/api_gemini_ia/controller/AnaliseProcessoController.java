@@ -17,7 +17,7 @@ import softwave.api_gemini_ia.entity.AnaliseProcesso;
 import softwave.api_gemini_ia.dto.AnaliseIAMovimentacaoDTO;
 import softwave.api_gemini_ia.dto.AnaliseProcessoDTO;
 
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/analise-processo")
 public class AnaliseProcessoController {
