@@ -1,167 +1,247 @@
-# API de Análise de Processos com IA - Gemini
+# API Gemini IA - Microserviço de Inteligência Artificial
 
-API REST desenvolvida em Spring Boot para análise inteligente de movimentações processuais utilizando IA Gemini.
+Microserviço de integração com Google Gemini IA para processamento inteligente de documentos e dados jurídicos do sistema SoftWave.
 
-## 📋 Sobre o Projeto
+## Tecnologias Utilizadas
 
-Esta API permite a análise automatizada de movimentações de processos jurídicos através da integração com o Gemini IA, fornecendo resumos e insights sobre cada movimentação processual.
+![Spring Boot](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Google AI](https://img.shields.io/badge/Google_AI-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
-## 🚀 Tecnologias Utilizadas
+### Dependências Principais
 
-- Java
-- Spring Boot
-- Spring Web
-- Bean Validation
-- Swagger/OpenAPI 3.0
-- Gemini IA (Google)
+- **Spring Boot 3.4.7** - Framework principal
+- **Spring Cloud OpenFeign** - Cliente HTTP declarativo
+- **Spring Data JPA** - Persistência de dados
+- **MySQL Connector J** - Driver do banco de dados
+- **Spring Boot Validation** - Validação de dados
+- **Swagger/OpenAPI 2.3.0** - Documentação da API
 
-## 📍 Endpoints
+## Requisitos do Sistema
 
-### Base URL
-```
-http://localhost:8082/analise-processo
-```
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
 
-### 1. Gerar Análise de Movimentação
+- **Java** >= 21
+- **Maven** >= 3.8.0
+- **MySQL** >= 8.0
+- **Chave API Google Gemini**
 
-Gera uma análise com IA para uma movimentação específica.
+## Instalação e Configuração
 
-**POST** `/analise-processo/{id}`
+### 1. Clone o Repositório
 
-**Parâmetros:**
-- `id` (path) - ID da movimentação a ser analisada
-
-**Respostas:**
-- `201` - Análise gerada com sucesso
-- `404` - Movimentação não encontrada
-- `500` - Erro interno ao gerar a análise
-
-**Exemplo:**
 ```bash
-POST /analise-processo/123
+git clone <repository-url>
+cd API-GEMINI-IA
 ```
 
----
+### 2. Configuração Google Gemini API
 
-### 2. Listar Todas as Análises
+#### Obter Chave da API
 
-Retorna todas as análises de movimentações geradas.
+1. Acesse [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Faça login com sua conta Google
+3. Clique em "Create API Key"
+4. Copie a chave gerada
 
-**GET** `/analise-processo`
+### 3. Configuração do Banco de Dados
 
-**Respostas:**
-- `200` - Lista de análises retornada com sucesso
-- `204` - Não há análises geradas
+O serviço Gemini utiliza o mesmo banco de dados principal do projeto:
 
-**Exemplo de Resposta:**
-```json
-[
-  {
-    "id": 1,
-    "resumoIA": "Análise da movimentação...",
-    "movimentacaoId": 123,
-    "dataAnalise": "2025-10-12T10:30:00"
-  }
-]
+```sql
+-- O banco softwave_db já deve estar criado pelo backend principal
+-- Caso não esteja, execute:
+CREATE DATABASE IF NOT EXISTS softwave_db;
+CREATE USER IF NOT EXISTS 'softwave'@'localhost' IDENTIFIED BY 'softwave123';
+GRANT ALL PRIVILEGES ON softwave_db.* TO 'softwave'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
----
+### 4. Configuração de Ambiente
 
-### 3. Buscar Análise por ID
+Crie um arquivo `application-local.yml` em `src/main/resources/`:
 
-Retorna uma análise específica pelo seu ID.
+```yaml
+spring:
+  application:
+    name: gemini-service
+  
+  datasource:
+    url: jdbc:mysql://localhost:3306/softwave_db
+    username: softwave
+    password: softwave123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    show-sql: true
 
-**GET** `/analise-processo/{id}`
+# Servidor
+server:
+  port: 8092
 
-**Parâmetros:**
-- `id` (path) - ID da análise
+# Google Gemini Configuration
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:your-gemini-api-key-here}
+    base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
+    model: ${GEMINI_MODEL:gemini-pro}
+    timeout: ${GEMINI_TIMEOUT:30000}
+    max-tokens: ${GEMINI_MAX_TOKENS:2048}
+    temperature: ${GEMINI_TEMPERATURE:0.7}
 
-**Respostas:**
-- `200` - Análise encontrada com sucesso
-- `404` - Análise não encontrada
+# CORS Configuration
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:8080}
+```
 
----
+### 5. Variáveis de Ambiente
 
-### 4. Buscar Análise por ID da Movimentação
+Configure as seguintes variáveis:
 
-Retorna a análise associada a uma movimentação específica, incluindo detalhes da movimentação.
+```bash
+# Gemini API
+export GEMINI_API_KEY=sua-chave-gemini-aqui
+export GEMINI_MODEL=gemini-pro
 
-**GET** `/analise-processo/por-movimentacao/{movimentacaoId}`
+# Database
+export DB_USERNAME=softwave
+export DB_PASSWORD=softwave123
 
-**Parâmetros:**
-- `movimentacaoId` (path) - ID da movimentação
+# CORS
+export CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:8080
+```
 
-**Respostas:**
-- `200` - Análise encontrada com sucesso
-- `404` - Análise não encontrada para o ID da movimentação fornecido
+### 6. Instalação das Dependências
 
-**Exemplo de Resposta:**
+```bash
+mvn clean install
+```
+
+### 7. Executar a Aplicação
+
+#### Modo Desenvolvimento
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=local
+```
+
+#### Build e Execução
+
+```bash
+mvn clean package
+java -jar target/api-gemini-ia-0.0.1-SNAPSHOT.jar
+```
+
+A aplicação estará disponível em: http://localhost:8092
+
+## Endpoints da API
+
+### Análise de Processos
+
+#### POST /analise-processo/{id}
+Gera análise IA para uma movimentação processual
+
+**Response:**
 ```json
 {
   "id": 1,
-  "resumoIA": "Análise detalhada da movimentação processual...",
+  "resumoIA": "Análise gerada pela IA sobre a movimentação processual",
+  "movimentacaoId": 123,
+  "dataAnalise": "2025-01-18T12:34:56"
+}
+```
+
+#### GET /analise-processo
+Lista todas as análises realizadas
+
+#### GET /analise-processo/{id}
+Obtém análise específica por ID
+
+#### GET /analise-processo/por-movimentacao/{movimentacaoId}
+Obtém análise por ID da movimentação
+
+**Response:**
+```json
+{
+  "id": 1,
+  "resumoIA": "Análise detalhada...",
   "movimentacao": {
     "id": 123,
-    "data": "2025-10-10",
+    "data": "2025-01-18",
     "movimento": "Petição inicial protocolada",
     "processoId": 456
   }
 }
 ```
 
-## 🏗️ Estrutura do Projeto
+## Documentação da API
 
-```
-softwave.api_gemini_ia/
-├── controller/
-│   └── AnaliseProcessoController.java
-├── dto/
-│   ├── AnaliseProcessoDTO.java
-│   ├── AnaliseIAMovimentacaoDTO.java
-│   └── UltimasMovimentacoesDTO.java
-├── entity/
-│   ├── AnaliseProcesso.java
-│   └── UltimasMovimentacoes.java
-└── services/
-    ├── AnaliseProcessoService.java
-    └── GeminiService.java
-```
+A documentação completa está disponível via Swagger UI:
 
-## 📦 Modelos de Dados
+- **Desenvolvimento**: http://localhost:8092/swagger-ui.html
+- **JSON**: http://localhost:8092/v3/api-docs
 
-### AnaliseProcesso
-Entidade principal que armazena as análises geradas pela IA.
+## Monitoramento
 
-### UltimasMovimentacoes
-Entidade que representa as movimentações processuais.
-
-### DTOs
-- **AnaliseProcessoDTO**: Transferência de dados da análise
-- **AnaliseIAMovimentacaoDTO**: Análise com dados completos da movimentação
-- **UltimasMovimentacoesDTO**: Dados da movimentação processual
-
-## 🔧 Configuração e Instalação
-
-1. Clone o repositório
-2. Configure as credenciais da API Gemini
-3. Configure o banco de dados
-4. Execute o projeto:
+### Health Check
 
 ```bash
-mvn spring-boot:run
+curl http://localhost:8092/actuator/health
 ```
 
-## 📚 Documentação API
+## Troubleshooting
 
-Acesse a documentação Swagger em:
+### Problemas Comuns
+
+1. **API Key inválida**: Verifique se a chave do Gemini está correta
+2. **Timeout**: Ajuste o timeout para documentos grandes
+3. **Conexão MySQL**: Confirme se o banco está rodando e acessível
+
+### Debugging
+
+```yaml
+logging:
+  level:
+    softwave: DEBUG
+    feign: DEBUG
 ```
-http://localhost:8082/swagger-ui.html
+
+## Testes
+
+### Executar Testes
+
+```bash
+# Todos os testes
+mvn test
+
+# Testes de integração
+mvn test -Dtest=**/*IntegrationTest
 ```
 
-## 👥 Autores
+## Contribuição
 
-Desenvolvido por Softwave
+1. Faça fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/gemini-improvement`)
+3. Commit suas mudanças (`git commit -m 'Melhora Gemini service'`)
+4. Push para a branch (`git push origin feature/gemini-improvement`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto é propriedade da SoftWave SPTech e destina-se ao uso exclusivo do escritório Lauriano & Leão Sociedade de Advogados.
 
 ---
 
-**Nota**: Certifique-se de configurar corretamente as variáveis de ambiente e credenciais antes de executar a aplicação.
+**Desenvolvido por:** SoftWave SPTech  
+**Versão:** 0.0.1-SNAPSHOT  
+**Data:** 2025
