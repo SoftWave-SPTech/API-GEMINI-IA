@@ -8,7 +8,7 @@ import softwave.api_gemini_ia.dto.UltimasMovimentacoesDTO;
 
 import java.util.List;
 
-@FeignClient(name = "ultimasMovimentacoesClient", url = "http://localhost:8080/ultimas-movimentacoes")
+@FeignClient(name = "ultimasMovimentacoesClient", url = "http://backend-softwave:8080/ultimas-movimentacoes")
 public interface UltimasMovimentacoesClient {
 
     @GetMapping("/{id}")
